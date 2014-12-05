@@ -5,7 +5,7 @@ var SyslogStream = require('../../lib/syslog'),
 
 var Promise = require('bluebird');
 
-require('should');
+require('should-eventually');
 
 describe('TCP transport', function () {
     var server, bindPort = 14243;
@@ -118,6 +118,44 @@ describe('TCP transport', function () {
             
             delete syslog._writeToStream;
             syslog.end('foo', done);
+        });
+    });
+    
+    it('should allow reopening the connection while it\'s closing', function (done) {
+        var syslog = new SyslogStream({
+            type: 'tcp',
+            port: bindPort
+        });
+        
+        syslog.end();
+        syslog.write('foo');
+        
+        var count = 0;
+        server.on('connection', function (socket) {
+            count++;
+            socket.once('data', function () {
+                count.should.equal(2);
+                syslog.end();
+                done();
+            });
+        });
+    });
+    
+    it('should reject when destroyed', function () {
+        var syslog = new SyslogStream({
+            type: 'tcp',
+            port: bindPort
+        });
+        
+        return syslog.transport.then(function () {
+            syslog.destroy();
+            
+            return Promise.each(
+                ['_getConnection', '_connect', '_disconnect', '_writeToStream', 'destroy', 'end'],
+                function (method) {
+                    return syslog[method]().should.eventually.throw();
+                }
+            );
         });
     });
 });

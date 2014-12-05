@@ -9,7 +9,8 @@
     "language-tags": "^1.0.2"
   },
   "devDependencies": {
-    "should": "^4.3.0"
+    "should": "^4.3.0",
+    "should-eventually": "^0.1.2"
   },
   "scripts": {
     "test": "test-runner"

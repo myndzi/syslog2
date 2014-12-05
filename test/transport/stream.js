@@ -5,7 +5,7 @@ var SyslogStream = require('../../lib/syslog'),
 
 var Promise = require('bluebird');
 
-require('should');
+require('should-eventually');
 
 describe('Node stream transport', function () {
     var stream;
@@ -126,6 +126,24 @@ describe('Node stream transport', function () {
         syslog.end('foo', function () {
             delete syslog._writeToStream;
             done();
+        });
+    });
+    
+    it('should reject when destroyed', function () {
+        var syslog = new SyslogStream({
+            type: 'stream',
+            stream: stream
+        });
+        
+        return syslog.transport.then(function () {
+            syslog.destroy();
+            
+            return Promise.each(
+                ['_getConnection', '_connect', '_disconnect', '_writeToStream', 'destroy', 'end'],
+                function (method) {
+                    return syslog[method]().should.eventually.throw();
+                }
+            );
         });
     });
 });

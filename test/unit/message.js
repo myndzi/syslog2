@@ -5,7 +5,7 @@ var SyslogStream = require('../../lib/syslog'),
     PassThrough = require('stream').PassThrough,
     format = require('util').format;
 
-require('should');
+require('should-eventually');
 
 var TEST = {
     NAME: 'Test',
@@ -394,6 +394,12 @@ describe('Message parsing', function () {
             it('should format any extra keys as structured data; SDID should contain the PEN', function () {
                 SD({ foo: { bar: 123 } }).should.equal('[foo@'+PEN+' bar="123"]');
             });
+            it('should not create any structured data if there is no PEN', function () {
+                var _PEN = syslog.PEN;
+                delete syslog.PEN;
+                SD({ foo: { bar: 123 } }).should.equal('');
+                syslog.PEN = _PEN;
+            });
             it('should not format keys that are not maps', function () {
                 ['bar', new Date(), true].forEach(function (val) {
                     var rec = { foo: val };
@@ -413,6 +419,22 @@ describe('Message parsing', function () {
             });
         });
     });
+    describe('buildMessage', function () {
+        it('should provide any data not converted to structured data as JSON', function () {
+            syslog = new SyslogStream({
+                stream: stream,
+                name: TEST.NAME,
+                msgId: TEST.MSG_ID,
+                PEN: TEST.PEN,
+                facility: TEST.FACILITY,
+                hostname: TEST.HOSTNAME
+            });
+            
+            syslog.buildMessage({
+                '@': 'foo'
+            }).should.match(/{"@":"foo"}$/);
+        });
+    });
     describe('formatObject', function () {
         it('should flag circular references', function () {
             syslog = new SyslogStream({
@@ -429,5 +451,4 @@ describe('Message parsing', function () {
             syslog.formatObject(obj).should.equal('{"foo":"[Circular]"}');
         });
     });
-    
 });
