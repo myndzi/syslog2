@@ -2,10 +2,10 @@
 
 var os = require('os');
 
-var SyslogStream = require('../../lib/syslog');
+var SyslogStream = require('../lib/syslog');
 require('should');
 
-var SYSLOG = require('../../lib/syslog-constants'),
+var SYSLOG = require('../lib/syslog-constants'),
     NILVALUE = SYSLOG.NILVALUE;
 
 var mockStream = { write: function () { } };

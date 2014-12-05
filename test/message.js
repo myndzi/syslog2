@@ -1,7 +1,7 @@
 'use strict';
 
-var SyslogStream = require('../../lib/syslog'),
-    SYSLOG = require('../../lib/syslog-constants'),
+var SyslogStream = require('../lib/syslog'),
+    SYSLOG = require('../lib/syslog-constants'),
     PassThrough = require('stream').PassThrough,
     format = require('util').format;
 
