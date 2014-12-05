@@ -33,24 +33,25 @@ var BUNYAN = {
 };
 
 describe('Message parsing', function () {
-    var syslog, stream = new PassThrough();
+    var syslog, stream;
     
-    describe('message', function () {
-        beforeEach(function () {
-            syslog = new SyslogStream({
-                stream: stream,
-                name: TEST.NAME,
-                msgId: TEST.MSG_ID,
-                PEN: TEST.PEN,
-                facility: TEST.FACILITY,
-                hostname: TEST.HOSTNAME
-            });
+    beforeEach(function () {
+        stream = new PassThrough();
+        syslog = new SyslogStream({
+            stream: stream,
+            name: TEST.NAME,
+            msgId: TEST.MSG_ID,
+            PEN: TEST.PEN,
+            facility: TEST.FACILITY,
+            hostname: TEST.HOSTNAME
         });
-        
-        afterEach(function (done) {
-            syslog.end(done);
-        });
+    });
+    
+    afterEach(function (done) {
+        syslog.end(done);
+    });
 
+    describe('message', function () {
         it('should accept plain text strings', function () {
             var msg = syslog.buildMessage('foo');
             
@@ -78,21 +79,6 @@ describe('Message parsing', function () {
     });
     
     describe('header', function () {
-        beforeEach(function () {
-            syslog = new SyslogStream({
-                stream: stream,
-                name: TEST.NAME,
-                msgId: TEST.MSG_ID,
-                PEN: TEST.PEN,
-                facility: TEST.FACILITY,
-                hostname: TEST.HOSTNAME
-            });
-        });
-        
-        afterEach(function (done) {
-            syslog.end(done);
-        });
-
         describe('formatLevel', function () {
             it('should return the correct syslog mapping for the given bunyan level', function () {
                 [ [ BUNYAN.FATAL, SYSLOG.LEVEL.EMERG ],
@@ -256,21 +242,6 @@ describe('Message parsing', function () {
         });
     });
     describe('structured data', function () {
-        beforeEach(function () {
-            syslog = new SyslogStream({
-                stream: stream,
-                name: TEST.NAME,
-                msgId: TEST.MSG_ID,
-                PEN: TEST.PEN,
-                facility: TEST.FACILITY,
-                hostname: TEST.HOSTNAME
-            });
-        });
-        
-        afterEach(function (done) {
-            syslog.end(done);
-        });
-
         function SD(rec) { return syslog.formatStructuredData(rec); };
         
         describe('standard SDIDs', function () {
@@ -421,15 +392,6 @@ describe('Message parsing', function () {
     });
     describe('buildMessage', function () {
         it('should provide any data not converted to structured data as JSON', function () {
-            syslog = new SyslogStream({
-                stream: stream,
-                name: TEST.NAME,
-                msgId: TEST.MSG_ID,
-                PEN: TEST.PEN,
-                facility: TEST.FACILITY,
-                hostname: TEST.HOSTNAME
-            });
-            
             syslog.buildMessage({
                 '@': 'foo'
             }).should.match(/{"@":"foo"}$/);
@@ -437,15 +399,6 @@ describe('Message parsing', function () {
     });
     describe('formatObject', function () {
         it('should flag circular references', function () {
-            syslog = new SyslogStream({
-                stream: stream,
-                name: TEST.NAME,
-                msgId: TEST.MSG_ID,
-                PEN: TEST.PEN,
-                facility: TEST.FACILITY,
-                hostname: TEST.HOSTNAME
-            });
-
             var obj = { };
             obj.foo = obj;
             syslog.formatObject(obj).should.equal('{"foo":"[Circular]"}');

@@ -1,5 +1,5 @@
 {
-  "name": "syslog-stream",
+  "name": "syslog2",
   "version": "1.0.0",
   "description": "Streams2 implementation of Syslog conforming to rfc5424 specs",
   "main": "./lib/syslog.js",
@@ -18,11 +18,13 @@
     "test": "istanbul cover node_modules/.bin/_mocha -- -u bdd -R spec test/**/*.js test/*.js;jshint lib/*.js"
   },
   "keywords": [
+    "bunyan",
     "syslog",
     "stream",
     "streams2",
     "structured",
-    "data"
+    "data",
+    "rfc5424"
   ],
   "author": "Kris Reeves",
   "license": "ISC"

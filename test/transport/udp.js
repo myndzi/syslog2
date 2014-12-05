@@ -44,10 +44,23 @@ describe('UDP transport', function () {
         syslog.end(done);
     });
     
-    it('should connect and pass messages', function (done) {
+    it('should connect and pass messages (flat syntax)', function (done) {
         var syslog = new SyslogStream({
             type: 'udp',
             port: bindPort
+        });
+        server.on('message', function (chunk) {
+            syslog.end(done);
+        });
+        syslog.write('foo');
+    });
+    
+    it('should connect and pass messages (connection object)', function (done) {
+        var syslog = new SyslogStream({
+            connection: {
+                type: 'udp',
+                port: bindPort
+            }
         });
         server.on('message', function (chunk) {
             syslog.end(done);

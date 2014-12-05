@@ -14,13 +14,6 @@ describe('Node stream transport', function () {
         stream = new Stream.PassThrough();
     });
     
-    // dunno why this stalls, meanwhile gonna leak some memory in these tests
-    /*
-    afterEach(function (done) {
-        stream.end(done);
-    });
-    */
-    
     it('should call the callback on connect', function (done) {
         var syslog = new SyslogStream({
             type: 'stream',
@@ -46,10 +39,24 @@ describe('Node stream transport', function () {
         syslog.end(done);
     });
     
-    it('should connect and pass messages', function (done) {
+    it('should connect and pass messages (flat syntax)', function (done) {
         var syslog = new SyslogStream({
             type: 'stream',
             stream: stream
+        });
+        stream.once('data', function (chunk) {
+            syslog.end(done);
+        });
+        
+        syslog.write('foo');
+    });
+    
+    it('should connect and pass messages (connection object)', function (done) {
+        var syslog = new SyslogStream({
+            connection: {
+                type: 'stream',
+                stream: stream
+            }
         });
         stream.once('data', function (chunk) {
             syslog.end(done);
