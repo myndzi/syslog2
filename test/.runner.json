@@ -1,4 +1,0 @@
-{
-    "sourceDirs": ["lib"],
-    "testDirs": ["unit", "transport"]
-}

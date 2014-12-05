@@ -396,6 +396,17 @@ describe('Message parsing', function () {
                 '@': 'foo'
             }).should.match(/{"@":"foo"}$/);
         });
+        it('should not be destructive to the passed object', function () {
+            var rec = { level: 'warn', msg: 'foo' };
+            syslog.write(rec);
+            rec.should.have.property('level');
+        });
+        it('should convert a buffer to a string', function () {
+            syslog.buildMessage(new Buffer('foo')).should.match(/foo$/);
+        });
+        it('should decode JSON if possible', function () {
+            syslog.buildMessage('{"msg":"foo"}').should.match(/foo$/);
+        });
     });
     describe('formatObject', function () {
         it('should flag circular references', function () {

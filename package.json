@@ -5,6 +5,7 @@
   "main": "./lib/syslog.js",
   "dependencies": {
     "bluebird": "^2.3.11",
+    "clone": "^0.1.19",
     "joi": "^4.9.0",
     "language-tags": "^1.0.2"
   },
