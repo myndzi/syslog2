@@ -4,10 +4,14 @@ var SyslogStream = require('../../lib/syslog'),
     fs = require('fs'),
     net = require('net');
 
+var Promise = require('bluebird');
+
+require('should');
+
 describe('Unix socket transport', function () {
     var server, path = '/tmp/syslog-test.log';
     
-    before(function (done) {
+    beforeEach(function (done) {
         try { fs.unlinkSync(path); }
         catch (e) { }
         
@@ -15,11 +19,36 @@ describe('Unix socket transport', function () {
         server.listen(path, done);
     });
     
-    after(function (done) {
+    afterEach(function (done) {
         try { fs.unlinkSync(path); }
         catch (e) { }
         
         server.close(done);
+    });
+    
+    it('should call the callback on connect', function (done) {
+        var syslog = new SyslogStream({
+            type: 'unix',
+            path: path
+        }, function () {
+            syslog.end(done);
+        });
+    });
+    
+    it('should return a promise when calling .end()', function () {
+        var syslog = new SyslogStream({
+            type: 'unix',
+            path: path
+        });
+        return syslog.end();
+    });
+    
+    it('should support a callback when calling .end()', function (done) {
+        var syslog = new SyslogStream({
+            type: 'unix',
+            path: path
+        });
+        syslog.end(done);
     });
     
     it('should connect and pass messages', function (done) {
@@ -34,5 +63,68 @@ describe('Unix socket transport', function () {
         });
         syslog.write('foo');
     });
+    
+    it('should emit an error event on socket errors', function (done) {
+        var syslog = new SyslogStream({
+            type: 'unix',
+            path: path
+        });
+        server.once('connection', function (socket) {
+            syslog.transport.then(function (stream) {
+                stream.emit('error', 'foo');
+                socket.end();
+            });
+        });
+        syslog.once('error', function (err) {
+            err.should.equal('foo');
+            done();
+        });
+    });
 
+    it('should attempt to reconnect on a write error', function (done) {
+        var syslog = new SyslogStream({
+            type: 'unix',
+            path: path
+        });
+
+        syslog.once('error', function (err) {
+            // intentionally disabled
+            //console.log('error:', err);
+        });
+
+        syslog._writeToStream = function () {
+            delete syslog._writeToStream;
+            return Promise.reject('retry');
+        };
+        
+        server.on('connection', function (socket) {
+            socket.once('data', done.bind(null, null));
+            syslog.end('foo');
+        });
+    });
+    
+    it('should give up trying to write after too many retries', function (done) {
+        var syslog = new SyslogStream({
+            type: 'unix',
+            path: path
+        });
+
+        syslog.on('error', function (err) {
+            // intentionally disabled
+            //console.log('error:', err);
+        });
+
+        syslog._writeToStream = function () {
+            return Promise.reject('retry');
+        };
+        
+        server.on('connection', function (socket) {
+            server.once('data', function () {
+                done('Should not receive message');
+            });
+            
+            delete syslog._writeToStream;
+            syslog.end(done);
+        });
+    });
 });

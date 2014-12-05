@@ -80,7 +80,7 @@ describe('TCP transport', function () {
             port: bindPort
         });
 
-        syslog.on('error', function (err) {
+        syslog.once('error', function (err) {
             // intentionally disabled
             //console.log('error:', err);
         });
@@ -112,9 +112,12 @@ describe('TCP transport', function () {
         };
         
         server.on('connection', function (socket) {
-            socket.once('data', done.bind(null, null));
+            server.once('data', function () {
+                done('Should not receive message');
+            });
+            
             delete syslog._writeToStream;
-            syslog.end(done);
+            syslog.end('foo', done);
         });
     });
 });
