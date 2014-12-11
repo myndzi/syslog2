@@ -1,31 +1,25 @@
 {
   "name": "syslog2",
-  "version": "1.0.0",
-  "description": "Streams2 implementation of Syslog conforming to rfc5424 specs",
-  "main": "./lib/syslog.js",
+  "version": "1.0.1",
+  "description": "Multi-transport Syslog stream with reconnect",
+  "main": "./index.js",
   "dependencies": {
-    "bluebird": "^2.3.11",
-    "clone": "^0.1.19",
-    "joi": "^4.9.0",
-    "language-tags": "^1.0.2"
+    "syslog-streams2": "^1.0.0",
+    "udp-streams2": "^1.0.3",
+    "unix-socket-streams2": "^1.0.3"
   },
   "devDependencies": {
-    "should": "^4.3.0",
-    "should-eventually": "^0.1.2",
-    "istanbul": "^0.3.4",
-    "jshint": "^2.5.10"
+    "mocha": "^2.0.1",
+    "should": "^4.3.0"
   },
   "scripts": {
-    "test": "istanbul cover node_modules/.bin/_mocha -- -u bdd -R spec test/**/*.js test/*.js;jshint lib/*.js"
+    "test": "mocha -u bdd -R spec test.js"
   },
   "keywords": [
     "bunyan",
     "syslog",
     "stream",
-    "streams2",
-    "structured",
-    "data",
-    "rfc5424"
+    "streams2"
   ],
   "author": "Kris Reeves",
   "license": "ISC"
