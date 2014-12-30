@@ -193,6 +193,41 @@ describe('Syslog2', function () {
         });
     });
     
+    it('should not try to reconnect multiple times', function (done) {
+        var log = new Syslog({
+            connection: {
+                type: 'tcp',
+                ip: '127.0.0.1',
+                port: 64993
+            }, reconnect: {
+                enabled: true,
+                maxTries: 100,
+                initalDelay: 0,
+                delayFactor: 0,
+                maxDelay: 0
+            }
+        });
+        
+        server.once('connection', function (socket) {
+            socket.destroy();
+        });
+        
+        log.connect(function () {
+            var warnings = 0;
+            
+            log.on('warn', function () {
+                warnings++;
+            });
+            
+            log.once('error', function (err) {
+                warnings.should.equal(100);
+                
+                err.should.match(/Unable to reconnect, reached max retries/);
+                log.end(done);
+            });
+        });
+    });
+    
     it('should buffer messages for delivery when connected', function (done) {
         var log = new Syslog({
             connection: {

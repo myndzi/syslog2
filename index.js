@@ -13,7 +13,7 @@ var clone = require('clone');
 function Syslog(opts) {
     PassThrough.call(this, { objectMode: true });
     
-    
+    this.retrying = false;
     this.shuttingDown = false;
     this.pause();
     
@@ -121,9 +121,8 @@ Syslog.prototype.connect = function (cb) {
         if (!connected && typeof cb === 'function') {
             cb(err);
         }
-        
+
         self.emit('warn', err);
-        
         cleanup();
     };
     cleanup = function () {
@@ -152,7 +151,7 @@ Syslog.prototype.maybeReconnect = function () {
     
     if (self.stream) { return; }
     
-    if (self.shuttingDown) { return; }
+    if (self.retrying || self.shuttingDown) { return; }
     
     var recon = self.reconnect;
     if (!recon.enabled) {
@@ -161,6 +160,8 @@ Syslog.prototype.maybeReconnect = function () {
     }
     
     (function retry(n, dly) {
+        self.retrying = true;
+
         if (self.shuttingDown) { return; }
         
         if (n >= recon.maxTries) {
@@ -173,6 +174,7 @@ Syslog.prototype.maybeReconnect = function () {
                 if (err) {
                     return retry(n+1, Math.min(recon.maxDelay, dly * recon.delayFactor));
                 }
+                self.retrying = false;
             });
         }, dly);
     })(0, recon.initialDelay);
