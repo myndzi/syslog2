@@ -5,9 +5,12 @@ This module presents as a Node (streams2) writable stream, and outputs to Syslog
 # Usage
 
     var Syslog = require('syslog2');
-	var log = new Syslog();
+	var log = Syslog.create();
 
 	log.write('message');
+
+`Syslog.create(options, callback)` is a shortcut for `new Syslog(options)`
+followed by `.connect(callback)`.
 
 # Options
 
