@@ -1,12 +1,12 @@
 {
   "name": "syslog2",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Multi-transport Syslog stream with reconnect",
   "main": "./index.js",
   "dependencies": {
-    "syslog-streams2": "^1.0.0",
-    "udp-streams2": "^1.0.5",
-    "unix-socket-streams2": "^1.0.3",
+    "syslog-streams2": "^1.0.1",
+    "udp-streams2": "^1.0.6",
+    "unix-socket-streams2": "^1.0.5",
     "clone": "^0.2.0"
   },
   "devDependencies": {
