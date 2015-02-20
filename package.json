@@ -1,7 +1,11 @@
 {
   "name": "syslog2",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Multi-transport Syslog stream with reconnect",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/myndzi/syslog2"
+  },
   "main": "./index.js",
   "dependencies": {
     "syslog-streams2": "^1.0.1",
