@@ -14,7 +14,7 @@ followed by `.connect(callback)`.
 
 # Options
 
-Various options are supported in the constructor:
+Various options are supported in the constructor/`.create` method:
 
 	new Syslog({
 		name: <app name>,
@@ -130,6 +130,23 @@ The hostname of the system logging the message.
 
 Defaults to `os.hostname()`. Can be overridden with `.write()`.
 
+
+# syslog.connect()
+
+If you've created an instance with the constructor, you'll need to connect it. Do that with `syslog.connect()`. If you supply a callback, it will be called on connection, or with an error if there was an error. **The callback may be called multiple times** since Syslog performs auto-reconnect. It's recommended that you use events instead. In fact, it's recommended that you just use `Syslog.create()` rather than `new Syslog()`.
+
+# Event: 'connect'
+
+Emitted each time Syslog2 establishes a connection.
+
+# Event: 'error'
+
+Emitted when Syslog2 is unable to establish an initial connection, or when a connection is lost and Syslog2 is unable to reconnect.
+
+# Event: 'warn'
+
+Emitted each time Syslog2 loses connection, before retrying. If retries are disabled or fail, an `error` event will also be emitted.
+
 # syslog.write()
 
 This module accepts messages in a few formats. They are described here. The stream is an *object mode* stream, so you needn't write Buffer objects to it. If it receives a Buffer, it will decode it to a string. If it receives a string, it will attempt to parse it as JSON.
@@ -204,8 +221,20 @@ outputs:
 
 `<149>1 2014-12-05T23:03:58.957Z myndzi node 20492 - [custom@32473 key="val"] hello`
 
+# Bunyan
+
+Syslog2 was designed for use with [bunyan](https://npmjs.com/package/bunyan). It can be used like so:
+
+    var log = bunyan.createLogger({
+		name: 'myapp',
+		stream: {
+			type: 'raw',
+			level: 'debug',
+			stream: Syslog.create(/* opts */)
+		}
+	})
+
+
 # Testing
 
 Clone the repository and run `npm test`
-
-As of version 1.0.0 there is 100% test coverage and JSHint runs clean.
