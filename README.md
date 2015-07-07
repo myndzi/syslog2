@@ -163,7 +163,7 @@ This will generate the header field according to the options created on instanti
 You may write any object to the stream, but the following keys have special meaning:
 
     {
-		msg: <message>,
+		message: <message>,
 		level: <log level>,
 		time: <timestamp>,
 		hostname: <originating hostname>,
