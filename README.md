@@ -201,7 +201,7 @@ This will generate the header field according to the options created on instanti
 
 ### Plain object
 
-This module make use of [syslog-streams2](https://www.npmjs.com/package/syslog-streams2) to process messages from objects into the RFC5424 Syslog format. You can write a [Bunyan](https://www.npmjs.com/package/bunyan) record, a [Glossy](https://www.npmjs.com/package/glossy) record, or an arbitrary object, with the Bunyan format being preferred.
+This module makes use of [syslog-streams2](https://www.npmjs.com/package/syslog-streams2) to process messages from objects into the RFC5424 Syslog format. You can write a [Bunyan](https://www.npmjs.com/package/bunyan) record, a [Glossy](https://www.npmjs.com/package/glossy) record, or an arbitrary object, with the Bunyan format being preferred.
 
 #### Bunyan record
 
