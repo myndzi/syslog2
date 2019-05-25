@@ -19,6 +19,7 @@
     "should": "^13.2.3"
   },
   "scripts": {
+    "bamp": "bamp",
     "test": "mocha -u bdd -R spec test.js"
   },
   "keywords": [
